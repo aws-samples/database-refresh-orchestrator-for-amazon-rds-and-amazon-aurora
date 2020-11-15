@@ -137,7 +137,7 @@ In the previous step by launching our solution you created from scratch a new da
 
 		**[original value]** "secretname": "CHANGE_ME"
 
-		**[new value]** "secret": "xxx" (where "xxx" is the name of the secret previously created)
+		**[new value]** "secretname": "xxx" (where "xxx" is the name of the secret previously created)
 
 1. Execute the Step Functions state machine "state-machine-awssol" using the Python script **launch_refresh.py** (from the package **awssoldb-orchestrator-launch.zip**)
 
@@ -148,7 +148,7 @@ In the previous step by launching our solution you created from scratch a new da
 
 1. At the end of the cloning operation you will find a new entry in the DynamoDB table "dbalignment-awssol" and you will get an e-mail with a confirm about the cloning just completed
 
-### Test 3b: Cloning an existing RDS database instance through a Point-In-Time-Restore (with Secrets Manager support and post-refresh scripts)
+### Test 3c: Cloning an existing RDS database instance through a Point-In-Time-Restore (with Secrets Manager support and post-refresh scripts)
 
 In this test we will execute the SQL scripts uploaded on S3 in the section Pre-requirements. These scripts represent post-refresh scripts executed against the new restored RDS database instance. The scripts will be executed by the Lambda function "awssoldb-RunScriptsMySQL". 
 
@@ -162,6 +162,12 @@ In this test we will execute the SQL scripts uploaded on S3 in the section Pre-r
 	* $ aws lambda update-function-code --function-name "awssoldb-RunScriptsMySQL" --zip-file fileb://awssoldb-RunScriptsMySQL.zip --region us-east-1
 
 1. Modify the refresh file **db-app1-mysqlinstd.json** (from the package **awssoldb-orchestrator-launch.zip**):
+	* In the "runscripts" element you must add the following new key-value pair (you can put it after the "secret" one):
+
+		**[original value]** "secretname": "CHANGE_ME"
+
+		**[new value]** "secretname": "xxx" (where "xxx" is the name of the secret previously created)
+
 	* In the "runscripts" element you must change the value for both the keys "torun" and "check.torun":
 
 		**[original value]** "torun": "false"
