@@ -16,17 +16,26 @@ Here the list of the pre-requirements you need to satisfy before deploy and test
 
 1. Choose the region where you want to deploy the solution. The demo has been tested in Virginia [us-east-1] but you can change it if necessary, by considering the availability of the services involved
 
-1. Download the two packages **awssoldb-orchestrator-pkg-cloudformation.zip** and **awssoldb-orchestrator-launch.zip**
+1. The demo has been tested with a Linux Client (in particularly with an AWS Cloud9 environment with Amazon Linux) but you can choose the type of client you want (i.e. a generic EC2 instance, a local computer, etc...). The client needs to have the following requirements:
 
-1. The computer from which you will perform the two tests below will need Python (this tutorial was tested with Python 3)
+	* Python installed (this demo has been tested with Python3)
+	* AWS SDK for Python (boto3) installed
+	* AWS CLI installed and configured
+	* IAM credentials configured (at the CLI level or at the role level)
+
+1. Download the two packages **awssoldb-orchestrator-pkg-cloudformation.zip** and **awssoldb-orchestrator-launch.zip** and unzip them. The two packages need to be staged on the client you will use for the demo:
+
+	* $ mkdir awssoldb
+	* $ cd ./awssoldb
+	* # Download the two packages...
+	* $ unzip awssoldb-orchestrator-launch.zip
+	* $ unzip awssoldb-orchestrator-pkg-cloudformation.zip
 
 1. Create an S3 bucket in the same region where you will deploy the solution. The bucket must have the following structures:
 
-	* A directory named **templates** which contains all the CloudFormation templates (from the package **awssoldb-orchestrator-pkg-cloudformation.zip**)
-	* A directory named **functions** which contains the code of all the Lambda functions associated with this project (from the package **awssoldb-orchestrator-pkg-cloudformation.zip**)
-
+	* A directory named **templates** which contains all the CloudFormation templates (from the package **awssoldb-orchestrator-pkg-cloudformation.zip**), so the files with extension *.template
+	* A directory named **functions** which contains the code of all the Lambda functions associated with this project (from the package **awssoldb-orchestrator-pkg-cloudformation.zip**), so the files with extension *.zip
 	* A directory path named **sqlscripts/rdsmysql/mysqlinstp/** which contains the SQL scripts **pre-reqs.sql** and **final-check.sql** (from the package **awssoldb-orchestrator-pkg-cloudformation.zip**)
-
 	* A directory path named **sqlscripts/rdsmysql/mysqlinstd/** which contains the SQL scripts **01script.sql** and **02script.sql** (from the package **awssoldb-orchestrator-pkg-cloudformation.zip**)
 
 1. Create an EC2 key pair in the same region where you will deploy the solution (optional, if you already have one)
@@ -35,17 +44,36 @@ Here the list of the pre-requirements you need to satisfy before deploy and test
 
 This tutorial uses the DEFAULT VPC.
 
-### Deploy the infrastructure with AWS CloudFormation
+### Deploy the infrastructure with AWS CloudFormation 
 
-Choose the region where you want to deploy your infrastructure and then submit the **awssoldb_global.template** to CloudFormation.
+Choose the region where you want to deploy your infrastructure and then submit the **awssoldb_global.template** to CloudFormation:
+
+1. Open the CloudFormation dashboard in the region where you will deploy the solution
+
+1. Create a new stack with new resources
+
+1. Create template in Designer
+
+1. Copy and paste the content of the template **awssoldb_global.template**
+
+1. Specify the following information in the "Specify stack details" page:
+
+	* **Stack name**
+	* **paramDBPwd**: Master user password for the RDS instances that will use for the testing the solution
+	* **paramKeyPairForEc2**: EC2 key pair for the EC2 instance used to run post-refresh SQL scripts
+	* **paramVPCId**: The ID of a VPC in the current region (this demo has been tested in the DEFAULT VPC)
+	* **paramS3bucket**: S3 bucket name created above
+	* **paramSubnetId1ForLambda**: First subnet Id for the Lambda functions used to run SQL scripts (the function will be deployed within a VPC)
+	* **paramSubnetId2ForLambda**: Second subnet Id for the Lambda functions used to run SQL scripts (the function will be deployed within a VPC)
+	* **paramSubnetIdForEc2**: Subnet Id for the EC2 instance used to run post-refresh SQL scripts
 
 The creation should take around 25 minutes (most of the time is taken by the RDS database instance and the Aurora cluster).
 
 ### Post-deploy steps
 
-After the successful creation of the infrastructure by CloudFormation, please do the following:
+After the successful creation of the infrastructure by CloudFormation, please do the following on the client where you have downloaded the two packages **awssoldb-orchestrator-pkg-cloudformation.zip** and **awssoldb-orchestrator-launch.zip**: 
 
-1. Modify the two refresh files **db-app2-auposinstd.json** and **db-app1-mysqlinstd.json** (from the package **awssoldb-orchestrator-launch.zip**):
+1. Modify the refresh files **db-app1-mysqlinstd.json** (from the package **awssoldb-orchestrator-launch.zip**):
 	* In the "restore" element you must change the value of the key "secgrpids":
 
 		**[original value]** "secgrpids": "CHANGE_ME"
@@ -60,15 +88,64 @@ After the successful creation of the infrastructure by CloudFormation, please do
 
 	* In the "runscripts" element you must change the value of the key "bucketname":
 
-		**[original value]** "bucketname": "arn:aws:sns:CHANGE_ME"
+		**[original value]** "bucketname": "CHANGE_ME"
 
-		**[new value]** "bucketname": "awssol-bucket"
+		**[new value]** "bucketname": "xxx" (where "xxx" is the name of the bucket you created above)
 
 	* In the "runscripts" element you must change the value of the key "check.bucketname":
 
-		**[original value]** "bucketname": "arn:aws:sns:CHANGE_ME"
+		**[original value]** "bucketname": "CHANGE_ME"
 
-		**[new value]** "bucketname": "awssol-bucket"
+		**[new value]** "bucketname": "xxx" (where "xxx" is the name of the bucket you created above)
+
+	* In the "fixtags" element you must change the value of the key "dbarn":
+
+		**[original value]** "dbarn": "arn:aws:rds:CHANGE_ME:CHANGE_ME:db:mysqlinstd"
+
+		**[new value]** "dbarn": "arn:aws:rds:xxx:yyy:db:mysqlinstd" (where "xxx" is the current region and "yyy" is the current AWS Account ID)
+
+	* In the "fixtags" element you must change the value of the key "check.dbarn":
+
+		**[original value]** "dbarn": "arn:aws:rds:CHANGE_ME:CHANGE_ME:db:mysqlinstd"
+
+		**[new value]** "dbarn": "arn:aws:rds:xxx:yyy:db:mysqlinstd" (where "xxx" is the current region and "yyy" is the current AWS Account ID)
+
+1. Modify the refresh files **db-app2-auposinstd.json** (from the package **awssoldb-orchestrator-launch.zip**):
+	* In the "restore" element you must change the value of the key "secgrpids":
+
+		**[original value]** "secgrpids": "CHANGE_ME"
+
+		**[new value]** "secgrpids": "sg-xxx" (where "sg-xxx" is the ID of the VPC Security Group "RDSSecGrp-awssoldb")
+
+	* In the "sendmsg" element you must change the value of the key "topicarn":
+
+		**[original value]** "topicarn": "CHANGE_ME"
+
+		**[new value]** "topicarn": "arn:aws:sns:<region_code>:<account_id>:<sns_topic_name"
+
+	* In the "fixtags" element you must change the value of the key "cluarn":
+
+		**[original value]** "cluarn": "arn:aws:rds:CHANGE_ME:CHANGE_ME:cluster:auposclud"
+
+		**[new value]** "cluarn": "arn:aws:rds:xxx:yyy:cluster:auposclud" (where "xxx" is the current region and "yyy" is the current AWS Account ID)
+
+	* In the "fixtags" element you must change the value of the key "check.cluarn":
+
+		**[original value]** "cluarn": "arn:aws:rds:CHANGE_ME:CHANGE_ME:cluster:auposclud"
+
+		**[new value]** "cluarn": "arn:aws:rds:xxx:yyy:cluster:auposclud" (where "xxx" is the current region and "yyy" is the current AWS Account ID)
+
+	* In the "fixtags" element you must change the value of the key "dbarn":
+
+		**[original value]** "dbarn": "arn:aws:rds:CHANGE_ME:CHANGE_ME:db:auposinstd"
+
+		**[new value]** "dbarn": "arn:aws:rds:xxx:yyy:db:auposinstd" (where "xxx" is the current region and "yyy" is the current AWS Account ID)
+
+	* In the "fixtags" element you must change the value of the key "check.dbarn":
+
+		**[original value]** "dbarn": "arn:aws:rds:CHANGE_ME:CHANGE_ME:db:auposinstd"
+
+		**[new value]** "dbarn": "arn:aws:rds:xxx:yyy:db:auposinstd" (where "xxx" is the current region and "yyy" is the current AWS Account ID)
 
 ## Test the solution
 
@@ -76,8 +153,9 @@ After the successful creation of the infrastructure by CloudFormation, please do
 
 1. Execute the Step Functions state machine "state-machine-awssol" using the Python script **launch_refresh.py** (from the package **awssoldb-orchestrator-launch.zip**)
 
+	* $ cd awssoldb
 	* $ cd awssoldb-orchestrator-launch
-	* $ python3 launch_refresh.py auposinstd app2 arn:aws:states:<region>:<account_id>:stateMachine:state-machine-awssol <region>
+	* $ python3 launch_refresh.py auposinstd app2 <state-machine-arn> <region>
 
 1. Monitor the status of the cloning operation using the Step Functions dashboard and the RDS dashboard
 
@@ -87,8 +165,9 @@ After the successful creation of the infrastructure by CloudFormation, please do
 
 1. Execute the Step Functions state machine "state-machine-awssol" using the Python script **launch_refresh.py** (from the package **awssoldb-orchestrator-launch.zip**)
 
+	* $ cd awssoldb
 	* $ cd awssoldb-orchestrator-launch
-	* $ python3 launch_refresh.py mysqlinstd app1 arn:aws:states:<region>:<account_id>:stateMachine:state-machine-awssol <region>
+	* $ python3 launch_refresh.py mysqlinstd app1 <state-machine-arn> <region>
 
 1. Monitor the status of the cloning operation using the Step Functions dashboard and the RDS dashboard
 
@@ -213,4 +292,3 @@ See [CONTRIBUTING](CONTRIBUTING.md#security-issue-notifications) for more inform
 ## License
 
 This library is licensed under the MIT-0 License. See the LICENSE file.
-
