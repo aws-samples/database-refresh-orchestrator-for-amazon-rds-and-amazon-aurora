@@ -27,7 +27,7 @@ Here the list of the pre-requirements you need to satisfy before deploy and test
 
 	* $ mkdir awssoldb
 	* $ cd ./awssoldb
-	* # Download the two packages...
+	* Download the two packages...
 	* $ unzip awssoldb-orchestrator-launch.zip
 	* $ unzip awssoldb-orchestrator-pkg-cloudformation.zip
 
