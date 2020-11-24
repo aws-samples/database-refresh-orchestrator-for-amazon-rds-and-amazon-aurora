@@ -27,7 +27,7 @@ Here the list of the pre-requirements you need to satisfy before deploy and test
 
 	* $ mkdir awssoldb
 	* $ cd ./awssoldb
-	* Download the two packages...
+	* # Download the two packages...
 	* $ unzip awssoldb-orchestrator-launch.zip
 	* $ unzip awssoldb-orchestrator-pkg-cloudformation.zip
 
@@ -63,6 +63,7 @@ Choose the region where you want to deploy your infrastructure and then submit t
 	* **paramKeyPairForEc2**: EC2 key pair for the EC2 instance used to run post-refresh SQL scripts
 	* **paramVPCId**: The ID of a VPC in the current region (this demo has been tested in the DEFAULT VPC)
 	* **paramS3bucket**: S3 bucket name created above
+	* **paramSNSTopic**: SNS Topic created above
 	* **paramSubnetId1ForLambda**: First subnet Id for the Lambda functions used to run SQL scripts (the function will be deployed within a VPC)
 	* **paramSubnetId2ForLambda**: Second subnet Id for the Lambda functions used to run SQL scripts (the function will be deployed within a VPC)
 	* **paramSubnetIdForEc2**: Subnet Id for the EC2 instance used to run post-refresh SQL scripts
