@@ -156,7 +156,7 @@ After the successful creation of the infrastructure by CloudFormation, please do
 
 	* $ cd awssoldb
 	* $ cd awssoldb-orchestrator-launch
-	* $ python3 launch_refresh.py auposinstd app2 <state-machine-arn> <region>
+	* $ python3 launch_refresh.py auposinstd app2 state-machine-arn region
 
 1. Monitor the status of the cloning operation using the Step Functions dashboard and the RDS dashboard
 
@@ -168,7 +168,7 @@ After the successful creation of the infrastructure by CloudFormation, please do
 
 	* $ cd awssoldb
 	* $ cd awssoldb-orchestrator-launch
-	* $ python3 launch_refresh.py mysqlinstd app1 <state-machine-arn> <region>
+	* $ python3 launch_refresh.py mysqlinstd app1 state-machine-arn region
 
 1. Monitor the status of the cloning operation using the Step Functions dashboard and the RDS dashboard
 
@@ -222,7 +222,7 @@ In the previous step by launching our solution you created from scratch a new da
 1. Execute the Step Functions state machine "state-machine-awssol" using the Python script **launch_refresh.py** (from the package **awssoldb-orchestrator-launch.zip**)
 
 	* $ cd awssoldb-orchestrator-launch
-	* $ python3 launch_refresh.py mysqlinstd app1 arn:aws:states:<region>:<account_id>:stateMachine:state-machine-awssol <region>
+	* $ python3 launch_refresh.py mysqlinstd app1 state-machine-arn region
 
 1. Monitor the status of the cloning operation using the Step Functions dashboard and the RDS dashboard
 
@@ -257,7 +257,7 @@ In this test we will execute the SQL scripts uploaded on S3 in the section Pre-r
 1. Execute the Step Functions state machine "state-machine-awssol" using the Python script **launch_refresh.py** (from the package **awssoldb-orchestrator-launch.zip**)
 
 	* $ cd awssoldb-orchestrator-launch
-	* $ python3 launch_refresh.py mysqlinstd app1 arn:aws:states:<region>:<account_id>:stateMachine:state-machine-awssol <region>
+	* $ python3 launch_refresh.py mysqlinstd app1 state-machine-arn region
 
 1. Monitor the status of the cloning operation using the Step Functions dashboard and the RDS dashboard
 
