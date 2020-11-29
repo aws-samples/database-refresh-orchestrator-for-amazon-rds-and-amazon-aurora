@@ -74,43 +74,6 @@ The creation should take around 25 minutes (most of the time is taken by the RDS
 
 After the successful creation of the infrastructure by CloudFormation, please do the following on the client where you have downloaded the two packages **awssoldb-orchestrator-pkg-cloudformation.zip** and **awssoldb-orchestrator-launch.zip**: 
 
-1. Modify the refresh files **db-app1-mysqlinstd.json** (from the package **awssoldb-orchestrator-launch.zip**):
-	* In the "restore" element you must change the value of the key "secgrpids":
-
-		**[original value]** "secgrpids": "CHANGE_ME"
-
-		**[new value]** "secgrpids": "sg-xxx" (where "sg-xxx" is the ID of the VPC Security Group "RDSSecGrp-awssoldb")
-
-	* In the "sendmsg" element you must change the value of the key "topicarn":
-
-		**[original value]** "topicarn": "CHANGE_ME"
-
-		**[new value]** "topicarn": "arn:aws:sns:<region_code>:<account_id>:<sns_topic_name"
-
-	* In the "runscripts" element you must change the value of the key "bucketname":
-
-		**[original value]** "bucketname": "CHANGE_ME"
-
-		**[new value]** "bucketname": "xxx" (where "xxx" is the name of the bucket you created above)
-
-	* In the "runscripts" element you must change the value of the key "check.bucketname":
-
-		**[original value]** "bucketname": "CHANGE_ME"
-
-		**[new value]** "bucketname": "xxx" (where "xxx" is the name of the bucket you created above)
-
-	* In the "fixtags" element you must change the value of the key "dbarn":
-
-		**[original value]** "dbarn": "arn:aws:rds:CHANGE_ME:CHANGE_ME:db:mysqlinstd"
-
-		**[new value]** "dbarn": "arn:aws:rds:xxx:yyy:db:mysqlinstd" (where "xxx" is the current region and "yyy" is the current AWS Account ID)
-
-	* In the "fixtags" element you must change the value of the key "check.dbarn":
-
-		**[original value]** "dbarn": "arn:aws:rds:CHANGE_ME:CHANGE_ME:db:mysqlinstd"
-
-		**[new value]** "dbarn": "arn:aws:rds:xxx:yyy:db:mysqlinstd" (where "xxx" is the current region and "yyy" is the current AWS Account ID)
-
 1. Modify the refresh files **db-app2-auposinstd.json** (from the package **awssoldb-orchestrator-launch.zip**):
 	* In the "restore" element you must change the value of the key "secgrpids":
 
@@ -148,7 +111,46 @@ After the successful creation of the infrastructure by CloudFormation, please do
 
 		**[new value]** "dbarn": "arn:aws:rds:xxx:yyy:db:auposinstd" (where "xxx" is the current region and "yyy" is the current AWS Account ID)
 
+1. Modify the refresh files **db-app1-mysqlinstd.json** (from the package **awssoldb-orchestrator-launch.zip**):
+	* In the "restore" element you must change the value of the key "secgrpids":
+
+		**[original value]** "secgrpids": "CHANGE_ME"
+
+		**[new value]** "secgrpids": "sg-xxx" (where "sg-xxx" is the ID of the VPC Security Group "RDSSecGrp-awssoldb")
+
+	* In the "sendmsg" element you must change the value of the key "topicarn":
+
+		**[original value]** "topicarn": "CHANGE_ME"
+
+		**[new value]** "topicarn": "arn:aws:sns:<region_code>:<account_id>:<sns_topic_name"
+
+	* In the "runscripts" element you must change the value of the key "bucketname":
+
+		**[original value]** "bucketname": "CHANGE_ME"
+
+		**[new value]** "bucketname": "xxx" (where "xxx" is the name of the bucket you created above)
+
+	* In the "runscripts" element you must change the value of the key "check.bucketname":
+
+		**[original value]** "bucketname": "CHANGE_ME"
+
+		**[new value]** "bucketname": "xxx" (where "xxx" is the name of the bucket you created above)
+
+	* In the "fixtags" element you must change the value of the key "dbarn":
+
+		**[original value]** "dbarn": "arn:aws:rds:CHANGE_ME:CHANGE_ME:db:mysqlinstd"
+
+		**[new value]** "dbarn": "arn:aws:rds:xxx:yyy:db:mysqlinstd" (where "xxx" is the current region and "yyy" is the current AWS Account ID)
+
+	* In the "fixtags" element you must change the value of the key "check.dbarn":
+
+		**[original value]** "dbarn": "arn:aws:rds:CHANGE_ME:CHANGE_ME:db:mysqlinstd"
+
+		**[new value]** "dbarn": "arn:aws:rds:xxx:yyy:db:mysqlinstd" (where "xxx" is the current region and "yyy" is the current AWS Account ID)
+
 ## Test the solution
+
+The two tests "Test 1" and "Test 2" are independent. "Test 2" is divided in multiple parts and you have to do them in the same order you find below.
 
 ### Test 1: Cloning an existing Aurora cluster using Aurora Fast-cloning
 
@@ -156,7 +158,7 @@ After the successful creation of the infrastructure by CloudFormation, please do
 
 	* $ cd awssoldb
 	* $ cd awssoldb-orchestrator-launch
-	* $ python3 launch_refresh.py auposinstd app2 state-machine-arn region
+	* $ python3 launch_refresh.py auposinstd app2 <state-machine-arn> <region>
 
 1. Monitor the status of the cloning operation using the Step Functions dashboard and the RDS dashboard
 
@@ -168,7 +170,7 @@ After the successful creation of the infrastructure by CloudFormation, please do
 
 	* $ cd awssoldb
 	* $ cd awssoldb-orchestrator-launch
-	* $ python3 launch_refresh.py mysqlinstd app1 state-machine-arn region
+	* $ python3 launch_refresh.py mysqlinstd app1 <state-machine-arn> <region>
 
 1. Monitor the status of the cloning operation using the Step Functions dashboard and the RDS dashboard
 
@@ -222,7 +224,7 @@ In the previous step by launching our solution you created from scratch a new da
 1. Execute the Step Functions state machine "state-machine-awssol" using the Python script **launch_refresh.py** (from the package **awssoldb-orchestrator-launch.zip**)
 
 	* $ cd awssoldb-orchestrator-launch
-	* $ python3 launch_refresh.py mysqlinstd app1 state-machine-arn region
+	* $ python3 launch_refresh.py mysqlinstd app1 arn:aws:states:<region>:<account_id>:stateMachine:state-machine-awssol <region>
 
 1. Monitor the status of the cloning operation using the Step Functions dashboard and the RDS dashboard
 
@@ -257,7 +259,7 @@ In this test we will execute the SQL scripts uploaded on S3 in the section Pre-r
 1. Execute the Step Functions state machine "state-machine-awssol" using the Python script **launch_refresh.py** (from the package **awssoldb-orchestrator-launch.zip**)
 
 	* $ cd awssoldb-orchestrator-launch
-	* $ python3 launch_refresh.py mysqlinstd app1 state-machine-arn region
+	* $ python3 launch_refresh.py mysqlinstd app1 arn:aws:states:<region>:<account_id>:stateMachine:state-machine-awssol <region>
 
 1. Monitor the status of the cloning operation using the Step Functions dashboard and the RDS dashboard
 
