@@ -230,7 +230,7 @@ In the previous step by launching our solution you created from scratch a new da
 
 1. At the end of the cloning operation you will find a new entry in the DynamoDB table "dbalignment-awssol" and you will get an e-mail with a confirm about the cloning just completed
 
-### Test 3c: Cloning an existing RDS database instance through a Point-In-Time-Restore (with Secrets Manager support and post-refresh scripts)
+### Test 2c: Cloning an existing RDS database instance through a Point-In-Time-Restore (with Secrets Manager support and post-refresh scripts)
 
 In this test we will execute the SQL scripts uploaded on S3 in the section Pre-requirements. These scripts represent post-refresh scripts executed against the new restored RDS database instance. The scripts will be executed by the Lambda function "awssoldb-RunScriptsMySQL". 
 
