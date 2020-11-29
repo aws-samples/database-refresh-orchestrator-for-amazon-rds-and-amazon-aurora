@@ -27,7 +27,7 @@ Here the list of the pre-requirements you need to satisfy before deploy and test
 
 	* $ mkdir awssoldb
 	* $ cd ./awssoldb
-	* # Download the two packages...
+	* Download the two packages...
 	* $ unzip awssoldb-orchestrator-launch.zip
 	* $ unzip awssoldb-orchestrator-pkg-cloudformation.zip
 
@@ -150,7 +150,7 @@ After the successful creation of the infrastructure by CloudFormation, please do
 
 ## Test the solution
 
-The two tests "Test 1" and "Test 2" are independent. "Test 2" is divided in multiple parts and you have to do them in the same order you find below.
+The two tests "Test 1" and "Test 2" are independent. "Test 2" is divided in multiple parts and you have to do them in the same order you will find below.
 
 ### Test 1: Cloning an existing Aurora cluster using Aurora Fast-cloning
 
@@ -184,9 +184,9 @@ This test requires a new Secrets Manager secret that will be associated with the
 
 	* Secret type: **Credentials for RDS database**
 
-	* User name: **admin*
+	* User name: **admin**
 
-	* Password: the one you find in the refresh file **db-app1-mysqlinstd.json** (from the package **awssoldb-orchestrator-launch.zip**)
+	* Password: the one you find in the refresh file **db-app1-mysqlinstd.json** (from the package **awssoldb-orchestrator-launch.zip**) in the "changemasterpwd" element, for the "temppwd" key
 
 	* Database: **mysqlinstd**
 
@@ -215,7 +215,7 @@ In the previous step by launching our solution you created from scratch a new da
 
 		**[new value]** "secret": "true"
 
-	* In the "changemasterpwd" element you must add the following new key-value pair (you can put it after the "secret" one):
+	* In the "changemasterpwd" element you must change the value of the key "secretname":
 
 		**[original value]** "secretname": "CHANGE_ME"
 
@@ -232,7 +232,17 @@ In the previous step by launching our solution you created from scratch a new da
 
 ### Test 2c: Cloning an existing RDS database instance through a Point-In-Time-Restore (with Secrets Manager support and post-refresh scripts)
 
-In this test we will execute the SQL scripts uploaded on S3 in the section Pre-requirements. These scripts represent post-refresh scripts executed against the new restored RDS database instance. The scripts will be executed by the Lambda function "awssoldb-RunScriptsMySQL". 
+In this test we will execute the SQL scripts uploaded on S3 in the section Pre-requirements. These scripts represent post-refresh scripts executed against the new restored RDS database instance.
+Before launch the refresh, you need to connect to the source database "mysqlinstp" and run the SQL script "pre-reqs.sql" (from the package **awssoldb-orchestrator-pkg-cloudformation.zip**):
+
+1. Connect to the source database "mysqlinstp" using your preferred SQL Client (for this test we used the standard **mysql** command line client):
+
+	* From the RDS dashboard, retrieve the endpoint of the "mysqlinstp" database
+	* mysql -h host-name -P 3307 -u admin -p
+	* use mysqldbp;
+	* Run the SQL script "pre-reqs.sql"
+
+The post-refresh scripts will be executed by the Lambda function "awssoldb-RunScriptsMySQL":
 
 1. The function needs to be modified to include the PyMySQL library (see https://pypi.org/project/PyMySQL/), the open source Python library used to connect to MySQL databases in this test:
 
@@ -244,7 +254,7 @@ In this test we will execute the SQL scripts uploaded on S3 in the section Pre-r
 	* $ aws lambda update-function-code --function-name "awssoldb-RunScriptsMySQL" --zip-file fileb://awssoldb-RunScriptsMySQL.zip --region us-east-1
 
 1. Modify the refresh file **db-app1-mysqlinstd.json** (from the package **awssoldb-orchestrator-launch.zip**):
-	* In the "runscripts" element you must add the following new key-value pair (you can put it after the "secret" one):
+	* In the "runscripts" element you must change the value of the key "secretname":
 
 		**[original value]** "secretname": "CHANGE_ME"
 
