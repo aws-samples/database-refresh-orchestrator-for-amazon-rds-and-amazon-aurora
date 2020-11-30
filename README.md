@@ -4,7 +4,7 @@ README.md
 
 This repository contains the resources required to build the solution described in the AWS Database Blog post https://github.com/aws-samples/aws-systems-manager-database-voice-commands/edit/master/README.md.
 
-The package **awssoldb-orchestrator-pkg-cloudformation.zip** represents the solution (CloudFormation templates, Lambda function's code and sample sql-scripts).
+The package **awssoldb-orchestrator-pkg-cloudformation.zip** represents the solution (CloudFormation templates, Lambda function's code and sample sql-scripts). It also contains the guide "awssoldb-orchestrator-guidelines-v1.docx" that you could use to perform database refreshes with different configurations than the two specified in the two tests of this tutorial.
 
 The package **awssoldb-orchestrator-launch.zip** contains the code to launch (manually, in this demo) the orchestrator.
 
@@ -42,7 +42,7 @@ Here the list of the pre-requirements you need to satisfy before deploy and test
 
 1. Create an SNS Topic with an E-mail subscriber in the same region you will deploy the solution (optional, if you already have one)
 
-This tutorial uses the DEFAULT VPC.
+**NOTE:**For this tutorial we used the DEFAULT VPC in us-east-1 but an additional private subnet was added to it, because the Lambda function that will run SQL scripts against the databases. If you want to use a custom VPC, be sure that you have at least one private subnet.
 
 ### Deploy the infrastructure with AWS CloudFormation 
 
@@ -64,8 +64,7 @@ Choose the region where you want to deploy your infrastructure and then submit t
 	* **paramVPCId**: The ID of a VPC in the current region (this demo has been tested in the DEFAULT VPC)
 	* **paramS3bucket**: S3 bucket name created above
 	* **paramSNSTopic**: SNS Topic created above
-	* **paramSubnetId1ForLambda**: First subnet Id for the Lambda functions used to run SQL scripts (the function will be deployed within a VPC)
-	* **paramSubnetId2ForLambda**: Second subnet Id for the Lambda functions used to run SQL scripts (the function will be deployed within a VPC)
+	* **paramSubnetId1ForLambda**: Subnet Id for the Lambda function used to run SQL scripts (the subnet MUST BE private)
 	* **paramSubnetIdForEc2**: Subnet Id for the EC2 instance used to run post-refresh SQL scripts
 
 The creation should take around 25 minutes (most of the time is taken by the RDS database instance and the Aurora cluster).
@@ -288,6 +287,8 @@ To delete everything, you need to:
 1. Delete the new Aurora cluster created during "Test 1"
 
 1. Delete the new RDS database instance created during "Test 2"
+
+1. Delete the Secrets Manager secret created during "Test 2"
 
 1. Delete the parent CloudFormation stack, the one associated with the **awssoldb_global.template** template. The deletion of all the stacks should take around 10 minutes
 
