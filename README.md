@@ -1,6 +1,6 @@
 README.md
 
-## Database refresh orchestrator for Amazon RDS and Amazon Aurora
+## Orchestrating database refreshes for Amazon RDS and Amazon Aurora
 
 This repository contains the resources required to build the solution described in the AWS Database Blog post https://github.com/aws-samples/aws-systems-manager-database-voice-commands/edit/master/README.md.
 
